@@ -1,0 +1,77 @@
+Create database for the shop.
+
+create database shop;
+mysql> use shop
+Database changed
+mysql> create table Category (CategoryID int, CategoryName varchar(15));
+
+
+mysql> create table Subcategory (SubCategoryID int,CategoryID int, SubCategoryName varchar(15));
+
+
+mysql> create table Product (SubCategoryID int, ProductID int, ProductName varchar(15));
+
+
+mysql> create table sales (SalesID int,ProductID int,Quantity int,UnitPrice int,DateofSale date);
+
+Added the dummy date to the tables
+
+mysql> use shop
+Database changed
+mysql> create table Category (CategoryID int, CategoryName varchar(15));
+
+mysql> create table Subcategory (SubCategoryID int,CategoryID int, SubCategoryName varchar(15));
+
+
+mysql> create table Product (SubCategoryID int, ProductID int, ProductName varchar(15));
+
+
+mysql> create table sales (SalesID int,ProductID int,Quantity int,UnitPrice int,DateofSale date);
+
+mysql> select * from category;
++------------+--------------+
+| CategoryID | CategoryName |
++------------+--------------+
+|          1 | Food         |
+|          2 | sports       |
+|          3 | Cleaning     |
++------------+--------------+
+mysql> select * from subcategory;
++---------------+------------+-----------------+
+| SubCategoryID | CategoryID | SubCategoryName |
++---------------+------------+-----------------+
+|            10 |          1 | Fastfood        |
+|            20 |          1 | drinks          |
+|            30 |          2 | Football        |
+|            40 |          2 | cricket         |
+|            50 |          3 | soap            |
++---------------+------------+-----------------+
+
+mysql> select * from product;
++---------------+-----------+-------------+
+| SubCategoryID | ProductID | ProductName |
++---------------+-----------+-------------+
+|           100 |        20 | 7up         |
+|           200 |        20 | coke        |
+|           300 |        30 | ball        |
+|           400 |        50 | Lynx        |
++---------------+-----------+-------------+
+
+mysql> select * from sales;
++---------+-----------+----------+-----------+------------+
+| SalesID | ProductID | Quantity | UnitPrice | DateofSale |
++---------+-----------+----------+-----------+------------+
+|       1 |       100 |       30 |        10 | 2020-10-13 |
+|       2 |       200 |        2 |         5 | 2020-10-12 |
+|       3 |       300 |       30 |        10 | 2020-10-13 |
+|       4 |       400 |       10 |        15 | 2020-10-13 |
+|       5 |       500 |       10 |         2 | 2020-10-10 |
++---------+-----------+----------+-----------+------------+
+* Write queries for the following: 
+1. The most popular product sold on a specific date.
+select Product.ProductName, Sales.ProductID, count(*) as Popularity, Sales.DateOfSale from Product, Sales where Sales.ProductID = Product.ProductID and DateOfSale = '2020-10-13' group by DateOfSale, Sales.ProductID having count(*) = (select max(r) from (select count(*) as r, ProductID from Sales where DateOfSale = '2020-10-13' group by DateOfSale, ProductID) as myTable);
+2. The most popular product sold last week. 
+select Product.ProductName, Sales.ProductID, Count(*) as "popularity", week(Sales.DateofSale) from Product, Sales where Sales.ProductID = Product.ProductID and week(DateofSale) = week(curdate())-1 and year(Dateofsale) = year(curdate()) group by week(DateofSale), Sales.ProductID having count(*) = (select max(r) from (select count(*) as r, ProductID from Sales where week(Dateofsale) = week(curdate())-1 and year(Dateofsale) = year(curdate()) group by DateofSale, ProductID) as myTable);  
+3. The most popular product sold on a specific month.
+select Product.ProductName, Sales.ProductID, Count(*) as "popularity", month(Sales.DateofSale) from Product, Sales where Sales.ProductID = Product.ProductID and month(DateofSale) = "10" group by month(DateofSale), Sales.ProductID having count(*) = (select max(r) from (select count(*) as r, ProductID from Sales where month(Dateofsale) = "10" group by DateofSale, ProductID) as myTable);
+
